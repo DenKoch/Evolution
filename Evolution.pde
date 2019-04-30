@@ -2,10 +2,12 @@ Grid grid;
 ArrayList<Bot> bots;
 
 boolean finished = true;
+int bots_alive;
 
 void setup() {
   grid = new Grid();
   bots = new ArrayList<Bot>(BOTS_COUNT);
+  bots_alive = BOTS_COUNT;
   
   for(int i = 0; i < BOTS_COUNT; i++) {
     bots.add(new Bot());
@@ -13,7 +15,6 @@ void setup() {
   
   size(1280, 720);
   background(0);
-  //frameRate(10);
   noLoop();
 }
 
@@ -22,7 +23,6 @@ void setup() {
 
 
 void draw() {
-  //background(0);
   if (finished) {
     grid.deleteBotsFoodPoison();
     
@@ -35,16 +35,7 @@ void draw() {
   }
 
   grid.renderGrid();
-  grid.renderBots();
-
-
-/*
-  if (!finished) {
-    for (Bot cur_bot : bots) {
-      cur_bot.step();
-    }
-  }*/
-  
+  grid.renderBots(); 
 }
 
 
@@ -54,7 +45,15 @@ void keyPressed() {
     finished = true;
     redraw();
   }
+  
   if(key == 'r') {
+    redraw();
+  }
+  
+  if(key >= '0' && key <= '9') {
+    for (Bot cur_bot : bots) {
+      cur_bot.step(int(key));
+    }
     redraw();
   }
 }

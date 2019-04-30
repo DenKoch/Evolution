@@ -42,6 +42,7 @@ public class Grid {
 
   public void renderBots() {
     for (Bot b : bots) {
+      if (b.health == 0) continue;
       fill(bot);
       square(GetX(b.x), GetY(b.y), cell_size);
       fill(255);
@@ -79,7 +80,7 @@ public class Grid {
     while (i < count) {
       int x = generateX();
       int y = generateY();
-      if (CheckCell(x, y) == 0) {
+      if (matrix[x][y] == 0) {
         SetFood(x, y);
         i++;
       }
@@ -93,7 +94,7 @@ public class Grid {
     while (i < count) {
       int x = generateX();
       int y = generateY();
-      if (CheckCell(x, y) == 0) {
+      if (matrix[x][y] == 0) {
         SetPoison(x, y);
         i++;
       }
@@ -105,7 +106,7 @@ public class Grid {
     while (i < count) {
       int x = generateX();
       int y = generateY();
-      if (CheckCell(x, y) == 0) {
+      if (matrix[x][y] == 0) {
         matrix[x][y] = 2;
         bots.get(i).init(x, y);
         i++;
@@ -160,11 +161,5 @@ public class Grid {
 
   public int generateY() {
     return floor(random(grid_height));
-  }
-
-
-
-  public int CheckCell(int index_x, int index_y) {
-    return matrix[index_x][index_y];
   }
 }

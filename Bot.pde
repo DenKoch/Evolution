@@ -13,6 +13,7 @@ class Bot {
     this.x = x;
     this.y = y;
     health = 35;
+    direction = 0;
 
     mind = new int[MIND_SIZE];
     for (int i = 0; i < MIND_SIZE; i++) {
@@ -50,15 +51,116 @@ class Bot {
     adr = new_adr;
   }
 
+
+  // =================================== одна итерация
+
   public void step() {
-    int x = this.x;
-    int y = this.y;
+    if (this.health == 0) return;
+
+    int cycles_count = 0;
+    while (cycles_count < 10) {
+      cycles_count++;
+
+      int command = this.mind[adr];
+
+      if (command < 8)  // 0..7 сделать шаг
+      {
+        move(command);
+        return;
+      }
+      if (command < 16) // 8..15 схватить/преобразовать
+      {         
+        fire(command);
+        return;
+      }
+      if (command < 24) // 16..23 посмотреть
+      {
+        int xxx = x_from_pvector(command);
+        int yyy = y_from_pvector(command);
+        IncCommandAddress(matrix[x][y] + 1);
+        continue;
+      }
+      if (command < 32) // 24..31 повернуть
+      {
+        command %= 8;
+        direction += command;
+        if (direction > 7 )
+        {  
+          direction -= 8;
+        }
+        IncCommandAddress(1);
+        continue;
+      }
+      IncCommandAddress(command); // 32..63 безусловный переход
+      continue;
+    }
+    
+    if (decHealth(1) <= 0) {
+      matrix[this.x][this.y] = 0;
+      bots_alive--;
+    }
   }
+
+
+
+  // ===================================== движение
 
   public void move(int direction) {
-    int x = (this.x +
+    int x = x_from_pvector(direction);
+    int y = y_from_pvector(direction);
+    int h = matrix[x][y];
+
+    if (h == 0) {
+      matrix[this.x][this.y] = 0;
+      matrix[x][y] = 2;
+      this.x = x;
+      this.y = y;
+    } else if (h == 3) {
+      incHealth(HEALTH_ADD);
+      matrix[this.x][this.y] = 0;
+      matrix[x][y] = 2;
+      this.x = x;
+      this.y = y;
+
+      // todo: add new food/poison item
+    } else if (h == 4) {
+      decHealth(9999);
+      matrix[this.x][this.y] = 0;
+      bots_alive--;
+      return;
+    }
+
+    if (decHealth(1) > 0) {
+      IncCommandAddress(h + 1);
+    } else {
+      matrix[this.x][this.y] = 0;
+      bots_alive--;
+    }
   }
 
+  // ============================================ схватить
+
+  public void fire(int direction) {
+    int x = x_from_pvector(direction);
+    int y = y_from_pvector(direction);
+    int h = matrix[x][y];
+
+    if (h == 0) {
+      matrix[x][x] = 0;
+      incHealth(HEALTH_ADD);
+
+      // todo: add new food/poison item
+    } else if (h == 4) {
+      matrix[x][y] = 3;
+    }
+
+    if (decHealth(1) > 0) {
+      IncCommandAddress(h + 1);
+    } else {
+      matrix[this.x][this.y] = 0;
+      bots_alive--;
+    }
+  }
 
   // -- получение Х-координаты рядом     ---------
   //  с ботом по направлению           -----------
@@ -69,9 +171,9 @@ class Bot {
     direction %= 8;
 
     if (direction == 0 ||direction == 6 || direction == 7) { 
-      res -= 1;
+      res--;
     } else  if (direction == 2 || direction == 3 || direction == 4) { 
-      res += 1;
+      res++;
     } 
     return res;
   }
@@ -85,9 +187,9 @@ class Bot {
     direction %= 8;
 
     if (direction < 3) { 
-      res -= 1;
-    } else  if (direction == 2 || direction == 3 || direction == 4) { 
-      res += 1;
+      res--;
+    } else  if (direction == 4 || direction == 5 || direction == 6) { 
+      res++;
     } 
     return res;
   }
