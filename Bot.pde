@@ -45,7 +45,7 @@ class Bot {
 
   public void IncCommandAddress(int a) {
     int new_adr = adr + a;
-    if (new_adr > MIND_SIZE)
+    if (new_adr >= MIND_SIZE)
       new_adr -= MIND_SIZE;
 
     adr = new_adr;
@@ -62,6 +62,7 @@ class Bot {
       cycles_count++;
 
       int command = this.mind[adr];
+      //println("command:" + str(command));
 
       if (command < 8)  // 0..7 сделать шаг
       {
@@ -83,6 +84,7 @@ class Bot {
       if (command < 32) // 24..31 повернуть
       {
         command %= 8;
+        //println("direction:" + str(direction));
         direction += command;
         if (direction > 7 )
         {  
@@ -92,7 +94,6 @@ class Bot {
         continue;
       }
       IncCommandAddress(command); // 32..63 безусловный переход
-      continue;
     }
     
     if (decHealth(1) <= 0) {
@@ -145,8 +146,8 @@ class Bot {
     int y = y_from_pvector(direction);
     int h = matrix[x][y];
 
-    if (h == 0) {
-      matrix[x][x] = 0;
+    if (h == 3) {
+      matrix[x][y] = 0;
       incHealth(HEALTH_ADD);
 
       // todo: add new food/poison item
