@@ -29,14 +29,6 @@ public class Grid {
   public void renderGridWalls() {
     for (int i = 0; i < grid_width; i++) {
       for (int j = 0; j < grid_height; j++) {
-        /*
-        Заполнение всех клеток, включая пустые - много лишних итераций
-         if (matrix[i][j] == 0) fill(empty);
-         else if (matrix[i][j] == 1) fill(wall);
-         else if (matrix[i][j] == 3) fill(food);
-         else fill(poison);
-         square(GetX(i), GetY(j), cell_size);
-         */
         if (matrix[i][j] == 0) {
           fill(empty);
           square(GetX(i), GetY(j), cell_size);
@@ -133,6 +125,7 @@ public class Grid {
       if (matrix[x][y] == 0) {
         matrix[x][y] = 2;
         bots.get(i).init(x, y);
+        //bots.get(i).setCoords(x, y);
         i++;
       }
     }

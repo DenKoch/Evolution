@@ -4,41 +4,51 @@ ArrayList<Bot> bots;
 boolean finished = true;
 int bots_alive;
 int generation_count;
-
+int[] lastGenLiveSpan;
+int current_lifespan = 0;
 
 void setup() {
   grid = new Grid();
   bots = new ArrayList<Bot>(BOTS_COUNT);
+  lastGenLiveSpan = new int[LAST_GEN_COUNT];
+  for(int i = 0; i < LAST_GEN_COUNT; i++) {
+    lastGenLiveSpan[i] = 0;
+  }
+  
   bots_alive = BOTS_COUNT;
+  generation_count = 0;
 
   for (int i = 0; i < BOTS_COUNT; i++) {
     bots.add(new Bot());
   }
-
   size(1280, 720);
-  background(0);
-  frameRate(60);
-  //noLoop();
+  textSize(12);
 }
 
 
-
-
-
 void draw() {
+  background(0);
+  
+  //fill(255);
+  //text("(" + mouseX + "," + mouseY + ")", mouseX, mouseY);
+  
   if (finished) {
     generation_count++;
+    
     updateInfo();
-
+    current_lifespan = 0;
+    
     grid.deleteBotsFoodPoison();
     grid.placeFood(FOOD_COUNT);
     grid.placePoison(POISON_COUNT);
     grid.placeBots(BOTS_COUNT);
 
     bots_alive = BOTS_COUNT;
-
+    
     finished = false;
   }
+
+  showInfo();
 
   grid.renderGridWalls();
   grid.renderFoodPoison();
@@ -48,49 +58,32 @@ void draw() {
     cur_bot.step();
     grid.renderFoodPoison();
     grid.renderBots();
-    println(bots_alive);
+
     if (bots_alive <= END_LIVE_COUNT) {
       finished = true;
       break;
     }
   }
+  
+  current_lifespan++;
 }
 
-int checkLiveCount() {
-  int result = 0;
 
-  for (Bot bot : bots) {
-    if (bot.health > 0)
-      result++;
+void showInfo() {
+  //textSize(20);
+  fill(255);
+  text(str(generation_count), 120, 160);
+  
+  for(int i = LAST_GEN_COUNT - 1; i >= 0; i--) {
+    text(lastGenLiveSpan[i], 1150, 160 + (9 - i) * 22);
   }
-
-  return result;
+  
+  //textSize(12);
 }
 
 void updateInfo() {
-  fill(255);
-  textAlign(CENTER, CENTER);
-  text(str(b.health), GetX(b.x), GetY(b.y), cell_size, cell_size);
-}
-
-
-void keyPressed() {
-  if (keyCode == ENTER) {
-    finished = true;
-    //redraw();
+  for(int i = 0; i < LAST_GEN_COUNT - 1; i++) {
+    lastGenLiveSpan[i] = lastGenLiveSpan[i+1];
   }
-
-  if (key == 'r') {
-    //redraw();
-  }
-
-  if (key >= '0' && key <= '9') {
-    for (Bot cur_bot : bots) {
-      //println(str(bots.indexOf(cur_bot)) + ' ' + str(cur_bot.health));
-      //println(cur_bot.mind);
-      cur_bot.move(key);
-      //cur_bot.step();
-    }
-    //redraw();
-  }
+  lastGenLiveSpan[LAST_GEN_COUNT - 1] = current_lifespan;
 }

@@ -15,12 +15,18 @@ class Bot {
     health = 35;
     direction = 0;
 
+
     mind = new int[MIND_SIZE];
     for (int i = 0; i < MIND_SIZE; i++) {
       mind[i] = floor(random(64));
     }
+    
   }
 
+  public void setCoords(int x, int y) {
+    this.x = x;
+    this.y = y;
+  }
   // ================================= увеличение здоровья
 
   public int incHealth(int h) {

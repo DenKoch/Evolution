@@ -20,3 +20,5 @@ color bot = color(50, 50, 255);
 int grid_width = 44;
 int grid_height = 22;
 int cell_size = 20;
+
+int LAST_GEN_COUNT = 10;
