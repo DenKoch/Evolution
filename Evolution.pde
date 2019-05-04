@@ -3,6 +3,8 @@ ArrayList<Bot> bots;
 
 boolean finished = true;
 int bots_alive;
+int generation_count;
+
 
 void setup() {
   grid = new Grid();
@@ -25,24 +27,29 @@ void setup() {
 
 void draw() {
   if (finished) {
-    grid.deleteBotsFoodPoison();
+    generation_count++;
+    updateInfo();
 
+    grid.deleteBotsFoodPoison();
     grid.placeFood(FOOD_COUNT);
     grid.placePoison(POISON_COUNT);
-
     grid.placeBots(BOTS_COUNT);
+
+    bots_alive = BOTS_COUNT;
 
     finished = false;
   }
 
-  grid.renderGrid();
+  grid.renderGridWalls();
+  grid.renderFoodPoison();
   grid.renderBots();
 
   for (Bot cur_bot : bots) {
     cur_bot.step();
-    grid.renderGrid();
+    grid.renderFoodPoison();
     grid.renderBots();
-    if (checkLiveCount() <= END_LIVE_COUNT) {
+    println(bots_alive);
+    if (bots_alive <= END_LIVE_COUNT) {
       finished = true;
       break;
     }
@@ -51,14 +58,21 @@ void draw() {
 
 int checkLiveCount() {
   int result = 0;
-  
-  for(Bot bot: bots) {
-    if(bot.health > 0)
+
+  for (Bot bot : bots) {
+    if (bot.health > 0)
       result++;
   }
-  
+
   return result;
 }
+
+void updateInfo() {
+  fill(255);
+  textAlign(CENTER, CENTER);
+  text(str(b.health), GetX(b.x), GetY(b.y), cell_size, cell_size);
+}
+
 
 void keyPressed() {
   if (keyCode == ENTER) {

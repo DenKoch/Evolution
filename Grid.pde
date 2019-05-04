@@ -26,14 +26,38 @@ public class Grid {
 
   // --------------------------------------- Рендер сетки и всего на ней
 
-  public void renderGrid() {
+  public void renderGridWalls() {
     for (int i = 0; i < grid_width; i++) {
       for (int j = 0; j < grid_height; j++) {
-        if (matrix[i][j] == 0) fill(empty);
-        else if (matrix[i][j] == 1) fill(wall);
-        else if (matrix[i][j] == 3) fill(food);
-        else fill(poison);
-        square(GetX(i), GetY(j), cell_size);
+        /*
+        Заполнение всех клеток, включая пустые - много лишних итераций
+         if (matrix[i][j] == 0) fill(empty);
+         else if (matrix[i][j] == 1) fill(wall);
+         else if (matrix[i][j] == 3) fill(food);
+         else fill(poison);
+         square(GetX(i), GetY(j), cell_size);
+         */
+        if (matrix[i][j] == 0) {
+          fill(empty);
+          square(GetX(i), GetY(j), cell_size);
+        } else if (matrix[i][j] == 1) {
+          fill(wall);
+          square(GetX(i), GetY(j), cell_size);
+        }
+      }
+    }
+  }
+  
+  public void renderFoodPoison() {
+    for (int i = 0; i < grid_width; i++) {
+      for (int j = 0; j < grid_height; j++) {
+        if (matrix[i][j] == 3) {
+          fill(food);
+          square(GetX(i), GetY(j), cell_size);
+        } else if (matrix[i][j] == 4) {
+          fill(poison);
+          square(GetX(i), GetY(j), cell_size);
+        }
       }
     }
   }
